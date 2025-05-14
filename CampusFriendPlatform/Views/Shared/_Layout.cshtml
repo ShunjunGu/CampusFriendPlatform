@@ -1,0 +1,70 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>@ViewData["Title"] - CampusFriendPlatform</title>
+    <script type="importmap"></script>
+    @* 移除了 Bootstrap CSS *@
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true"/>
+    @* 移除了 CampusFriendPlatform.styles.css (通常与 Bootstrap 模板相关) *@
+
+    @* Materialize CSS 的样式文件 *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    @* Material Icons 字体 *@
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+<header>
+    @* 注意：这里的 nav 标签使用了 Bootstrap 的 class (navbar, etc.)，
+       移除 Bootstrap CSS 后这些 class 将不再起作用，导航栏样式会改变。
+       如果需要 Material Design 风格的导航栏，需要使用 Materialize 的 nav 类。
+       我们暂时保留这些 class，后续如果需要可以修改为 Materialize 导航栏。*@
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid">
+            <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">CampusFriendPlatform</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                <ul class="navbar-nav flex-grow-1">
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>
+@* 注意：这里的 container, row, col 也使用了 Bootstrap 或默认模板的类，
+   移除 Bootstrap CSS 后，这些布局类的效果会改变。
+   后续需要在视图中使用 Materialize 的 container, row, col 等类来构建布局。*@
+<div class="container">
+    <main role="main" class="pb-3">
+        @RenderBody()
+    </main>
+</div>
+
+<footer class="border-top footer text-muted">
+    <div class="container">
+        &copy; 2025 - CampusFriendPlatform - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    </div>
+</footer>
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+@* 移除了 Bootstrap JavaScript *@
+<script src="~/js/site.js" asp-append-version="true"></script>
+
+@* Materialize CSS 的 JavaScript 文件 *@
+<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+
+@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

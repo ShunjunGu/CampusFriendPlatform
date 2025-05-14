@@ -1,0 +1,114 @@
+@model CampusFriendPlatform.Models.Note
+
+@{
+    ViewData["Title"] = "取纸条 - CampusFriendPlatform";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/site.css" />
+    <style>
+        .material-form {
+            max-width: 500px;
+            margin: 2rem auto;
+        }
+        
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+    </style>
+}
+
+<div class="material-form">
+    <div class="card">
+        <div class="card-content">
+            <span class="card-title">填写匹配条件</span>
+            
+            <form asp-action="Find" method="post">
+                @Html.AntiForgeryToken()
+                
+                <div class="input-field">
+                    <input asp-for="Grade" id="grade" class="validate" required>
+                    <label for="grade">年级</label>
+                </div>
+                
+                <div class="input-field">
+                    <select asp-for="Gender" id="gender" required>
+                        <option value="" disabled selected>请选择性别</option>
+                        <option value="男">男</option>
+                        <option value="女">女</option>
+                    </select>
+                    <label>性别</label>
+                </div>
+                
+                <button type="submit" class="btn waves-effect waves-light blue darken-1">
+                    抽纸条
+                    <i class="material-icons left">add</i>
+                </button>
+                <button type="submit" formaction="@Url.Action("TenPacksDraw", "Notes")" 
+                        class="btn waves-effect waves-light orange darken-1" style="margin-left: 1rem;">
+                    我想交很多朋友
+                    <i class="material-icons left">group</i>
+                </button>
+            </form>
+        </div>
+    </div>
+    
+    @if (ViewBag.MatchFound != null)
+    {
+        <div class="card">
+            <div class="card-content">
+                @if (ViewBag.MatchFound)
+                {
+                    <div class="card-panel teal lighten-5" style="margin-top: 2rem;">
+                        <h5 class="teal-text text-darken-4">找到的纸条</h5>
+                        <div class="divider" style="margin-bottom: 1rem;"></div>
+                        @if (ViewBag.MatchedNotes != null)
+                        {
+                            foreach (var item in ViewBag.MatchedNotes)
+                            {
+                                <div class="card hoverable">
+                                    <div class="card-content">
+                                        <p>@item.Name</p>
+                                        <div class="chip">
+                                            年级：@item.Grade
+                                        </div>
+                                        <div class="chip">
+                                            性别：@item.Gender
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(item.PhoneNumber))
+                                        {
+                                            <div class="chip">
+                                                联系方式：@item.PhoneNumber
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                }
+                else if (ViewBag.MatchedNotes != null)
+                {
+                    <div class="card-panel red lighten-5" style="margin-top: 2rem;">
+                        <span class="red-text text-darken-4">
+                            <i class="material-icons left">warning</i>未找到匹配的纸条
+                        </span>
+                    </div>
+                }
+            </div>
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var elems = document.querySelectorAll('select');
+            var instances = M.FormSelect.init(elems);
+        });
+    </script>
+}

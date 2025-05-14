@@ -1,0 +1,246 @@
+@model CampusFriendPlatform.Models.Note
+
+@{
+    // 设置页面标题
+    ViewData["Title"] = "放纸条 - CampusFriendPlatform";
+    // 您可以选择使用默认布局，或者如果这个页面样式差异很大，
+    // 甚至可以考虑不使用布局 (Layout = null;)
+    // 这里我们假设仍然使用 _Layout，并将样式注入到其中。
+}
+
+@section Styles {
+    <style>
+        /* 将您提供的 CSS 规则复制到这里 */
+        :root {
+            --apple-primary: #0071e3;
+            --apple-gray: #86868b;
+            --apple-background: #f5f5f7;
+        }
+
+        /* 注意：这里定义的 body 样式可能会与 _Layout 中的 body 样式有部分冲突。
+           实际效果可能受 _Layout 的影响。如果需要，可能需要调整 _Layout 或这里的样式。*/
+        body {
+            font-family: -apple-system, BlinkMacSystemFont,
+                         "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell,
+                         sans-serif;
+            /* margin 和 padding 可能会被 _Layout 覆盖 */
+            /* background-color 可能会被 _Layout 覆盖 */
+            color: #1d1d1f; /* 这个颜色应该会生效 */
+        }
+
+        /* 外层容器的样式 */
+        .container {
+            max-width: 600px;
+            margin: 0 auto; /* 居中容器 */
+            background: white;
+            border-radius: 18px;
+            padding: 2.5rem;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            /* 增加上下外边距，与布局页的其他内容隔开 */
+            margin-top: 40px; /* 根据需要调整 */
+            margin-bottom: 40px; /* 根据需要调整 */
+        }
+
+        /* 页面标题样式 */
+        .container h1 { /* 限定只影响此容器内的 h1 */
+            font-weight: 600;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: #1d1d1f;
+        }
+
+        /* 表单组样式 */
+        .form-group {
+            margin-bottom: 1.8rem;
+        }
+
+        /* 标签样式 */
+        .form-group label {
+            display: block; /* 标签独占一行 */
+            font-size: 0.9rem;
+            margin-bottom: 0.6rem;
+            color: var(--apple-gray);
+        }
+
+        /* 输入框、选择框、文本域样式 */
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%; /* 宽度填满父容器 */
+            padding: 0.8rem;
+            border: 1px solid #d2d2d7;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: block; /* 确保它们也是块级元素 */
+        }
+
+        /* 输入框、选择框、文本域获得焦点时的样式 */
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--apple-primary);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+        }
+
+        /* 提交按钮样式 */
+        button[type="submit"] { /* 精确选择提交按钮 */
+            background-color: var(--apple-primary);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.8rem;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            width: 100%; /* 按钮宽度填满 */
+            display: block; /* 按钮独占一行 */
+            margin-top: 2rem; /* 按钮上方的间距 */
+        }
+
+        /* 提交按钮 hover 效果 */
+        button[type="submit"]:hover {
+            background-color: #0077ED;
+        }
+
+        /* 提交按钮 active 效果 */
+        button[type="submit"]:active {
+            transform: scale(0.98);
+        }
+
+        /* 底部信息样式 */
+        .footer {
+            margin-top: 2rem;
+            text-align: center;
+            color: var(--apple-gray);
+            font-size: 0.9rem;
+            /* 这个 footer 在容器内，可能与布局页的 footer 同时出现 */
+        }
+
+        /* 返回主页链接样式 */
+        .nav-link {
+            color: var(--apple-primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            display: inline-block; /* 保持链接为行内块 */
+        }
+
+        /* 返回主页链接 hover 效果 */
+        .nav-link:hover {
+            opacity: 0.8;
+        }
+
+        /* 添加基本的验证错误消息样式 */
+        .text-danger {
+            color: red;
+            font-size: 0.8rem;
+            margin-top: 0.2rem;
+            display: block; /* 验证消息独占一行 */
+        }
+
+    </style>
+}
+
+@* 将您 HTML 中 body 标签内的内容放在这里，并转换为 Razor 语法 *@
+<div class="container">
+    @* 修改返回主页链接，使用 Url.Action 生成正确的 URL *@
+    <a href="@Url.Action("Index", "Home")" class="nav-link">返回主页</a>
+    @* 使用您提供的 H1 作为页面标题 *@
+    <h1>填写您的交友信息</h1>
+
+    @* 修改表单，使用 ASP.NET Core 的 Tag Helpers *@
+    <form asp-action="Create">
+        @* 添加防伪标记 *@
+        @Html.AntiForgeryToken()
+
+        @* 添加验证摘要，显示所有验证错误 *@
+        <div asp-validation-summary="All" class="text-danger"></div>
+
+
+        <div class="form-group">
+            @* 使用 asp-for 绑定 Label 和 Input *@
+            <label asp-for="Name" id="NameLabel">姓名</label> @* 添加 id 方便关联 *@
+            <input type="text" id="Name" asp-for="Name" placeholder="请输入姓名">
+            @* 添加验证消息 Span *@
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Grade" id="GradeLabel">年级</label> @* 添加 id 方便关联 *@
+            <input type="text" id="Grade" asp-for="Grade" placeholder="请输入年级">
+             <span asp-validation-for="Grade" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="Gender" id="GenderLabel">性别</label> @* 添加 id 方便关联 *@
+            @* 使用 asp-for 绑定 Select，并添加选项 *@
+            <select id="Gender" asp-for="Gender">
+                <option value="">请选择性别</option>
+                <option value="男">男</option>
+                <option value="女">女</option>
+            </select>
+             <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+
+        <div class="form-group">
+            <label asp-for="PhoneNumber" id="PhoneNumberLabel">手机号</label> @* 添加 id 方便关联 *@
+            @* 将文本域改为输入框，类型为电话号码，并绑定 asp-for *@
+            <input type="tel" id="PhoneNumber" asp-for="PhoneNumber" placeholder="请输入手机号">
+             <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+        </div>
+
+        @* 修改按钮，使用 type="submit" *@
+        <button type="submit">提交纸条</button>
+        
+        <!-- 新增的 AI 建议部分 -->
+        <div class="form-group">
+            <h3>AI 纸条建议</h3>
+            <p>点击下方按钮，获取由 Kimi 人工智能助手生成的纸条内容建议：</p>
+            <button type="button" id="aiSuggestionBtn" class="nav-link">获取 AI 建议</button>
+            <div id="aiResponse" class="text-danger" style="margin-top: 1rem;"></div>
+        </div>
+
+        @* 您提供的 footer 部分 *@
+        <div class="footer">
+            <p>© 2025 - CampusFriendPlatform - Privacy</p>
+        </div>
+    </form>
+
+    @* 您提供的 HTML 也没有自定义 JS，所以 Scripts 部分比较简单 *@
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // 获取 AI 建议按钮的事件监听器
+        document.getElementById('aiSuggestionBtn').addEventListener('click', async function () {
+            try {
+                const response = await fetch('/Notes/GetAiSuggestion', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        // 添加防伪令牌到请求头
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify({ userInput: '请帮我写一个交友纸条，要求友好、自然且吸引人' })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+
+                if (data.error) {
+                    document.getElementById('aiResponse').textContent = '错误：' + data.error;
+                } else {
+                    document.getElementById('aiResponse').textContent = 'Kimi 的建议：' + data.response;
+                }
+            } catch (error) {
+                document.getElementById('aiResponse').textContent = '发生错误：' + error.message;
+            }
+        });
+    </script>
+}

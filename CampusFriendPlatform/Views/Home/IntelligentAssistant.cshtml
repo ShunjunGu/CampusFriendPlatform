@@ -1,0 +1,226 @@
+@* 这个视图将作为一个独立的 HTML 页面渲染，不使用 _Layout.cshtml *@
+@{
+    // 明确设置布局为 null，表示不使用任何布局页
+    Layout = null;
+    // 从控制器中获取设置的页面标题
+    ViewData["Title"] = "AI Assistant"; // 根据提供的HTML标题进行设置
+}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>@ViewData["Title"]</title> @* 使用 ViewData["Title"] 设置页面的标题 *@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+// 您提供的 Tailwind 配置，必须在 Tailwind CDN 脚本之后
+tailwind.config = {
+    theme: {
+        extend: {
+            colors: {
+                primary: '#0A84FF', // 用户消息气泡背景色
+                secondary: '#3A3A3C' // AI 消息气泡背景色
+            },
+            borderRadius: {
+                'none': '0px',
+                'sm': '8px',
+                DEFAULT: '12px', // 默认圆角
+                'md': '16px',
+                'lg': '20px',
+                'xl': '24px',
+                '2xl': '28px',
+                '3xl': '32px',
+                'full': '9999px',
+                'button': '12px' // 按钮的自定义圆角
+            }
+        }
+    }
+}
+</script>
+@* 您提供的内嵌 CSS 样式 (如果 Tailwind 没有覆盖所有需求) *@
+<style>
+    body {
+        /* 确保背景覆盖整个视口高度 */
+        min-height: 100vh;
+    }
+    /* 确保主聊天区域可以滚动 */
+    .flex-1 {
+        overflow-y: auto;
+    }
+    /* 移除输入框默认的焦点轮廓，防止与 Tailwind 的 focus 样式冲突 */
+    input:focus {
+         outline: none;
+     }
+</style>
+</head>
+@* 页面主体，包含您提供的所有 HTML 结构 *@
+<body class="bg-gradient-to-b from-[#1C1C1E] to-[#2C2C2E] min-h-[100vh] text-white">
+    <div class="max-w-[1440px] mx-auto flex flex-col h-screen">
+        @* 页面头部 *@
+        <header class="bg-[#1C1C1E]/80 backdrop-blur-md border-b border-gray-700/50 px-6 py-4 flex items-center justify-between">
+            <div class="font-['Pacifico'] text-2xl">logo</div> @* logo *@
+            @* 设置按钮 *@
+            <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors !rounded-button">
+                <i class="fas fa-cog text-xl"></i>
+            </button>
+        </header>
+
+        @* 主聊天区域 - 添加 ID，用于 JavaScript 定位消息容器 *@
+        <main id="chatMessages" class="flex-1 overflow-y-auto px-6 py-4 space-y-6">
+            @* LLM 和用户的消息气泡将通过 JavaScript 动态添加到这里 *@
+            @* 您提供的示例消息气泡已被移除，以确保聊天区域开始时是空的 *@
+        </main>
+
+        @* 输入区域 *@
+        <div class="bg-[#1C1C1E]/80 backdrop-blur-md border-t border-gray-700/50 p-4">
+            <div class="flex items-center space-x-4">
+                @* 语音/麦克风按钮 (示例) *@
+                <div class="flex space-x-2">
+                    <button class="w-10 h-10 flex items-center justify-center text-gray-400 hover:text-white transition-colors bg-secondary/50 !rounded-button">
+                        <i class="fas fa-microphone text-lg"></i>
+                    </button>
+                </div>
+                @* 用户输入框 - 添加 ID 以便 JavaScript 获取值 *@
+                <div class="flex-1">
+                    <input id="promptInput" type="text" placeholder="输入消息..." class="w-full bg-secondary/50 text-white placeholder-gray-500 px-4 py-2 !rounded-button border-none focus:ring-2 focus:ring-primary/50 outline-none text-sm">
+                </div>
+                @* 发送按钮 - 添加 ID 以便 JavaScript 添加事件监听 *@
+                <button id="sendPromptButton" class="w-10 h-10 flex items-center justify-center text-white bg-primary hover:bg-primary/90 transition-colors !rounded-button disabled:opacity-50 disabled:cursor-not-allowed">
+                    <i class="fas fa-paper-plane text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @* 将 JavaScript 代码放在 body 结束标签之前，以便在 DOM 加载完成后执行 *@
+    <script>
+        // 等待页面完全加载
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取页面元素
+            const promptInput = document.getElementById('promptInput');
+            const sendPromptButton = document.getElementById('sendPromptButton');
+            const chatMessages = document.getElementById('chatMessages'); // 获取消息容器
+
+            // 为发送按钮添加点击事件监听器
+            sendPromptButton.addEventListener('click', async function() { // 标记函数为 async，以便使用 await
+                // 获取用户输入，并移除首尾空白
+                const userPrompt = promptInput.value.trim();
+
+                // 只有当输入不为空时才处理
+                if (userPrompt) {
+                    // 在控制台打印用户输入 (暂时用于测试)
+                    console.log("用户输入的问题:", userPrompt);
+
+                    // 显示用户发送的消息气泡
+                    displayMessage(userPrompt, 'user');
+
+                    // 清空输入框
+                    promptInput.value = '';
+
+                    // 发送用户输入到后端的 GetLlmResponse 接口
+                    try {
+                        const response = await fetch('/Home/GetLlmResponse', { // 使用 fetch 发送 POST 请求到 /Home/GetLlmResponse
+                            method: 'POST', // 指定请求方法为 POST
+                            headers: {
+                                'Content-Type': 'application/json', // 设置请求头，告诉服务器发送的是 JSON 数据
+                            },
+                            // 将用户输入放入请求体，格式为 JSON
+                            body: JSON.stringify({ prompt: userPrompt }),
+                        });
+
+                        // 检查 HTTP 响应状态码
+                        if (!response.ok) {
+                            // 如果响应状态码不是 2xx，抛出错误
+                            throw new Error(`HTTP error! status: ${response.status}`);
+                        }
+
+                        // 解析后端返回的 JSON 数据
+                        const data = await response.json();
+
+                        // 从解析后的数据中获取 LLM 回应文本 (根据后端返回的属性名 responseText)
+                        const llmResponseText = data.responseText;
+
+                        // 显示 AI 回应气泡
+                        if (llmResponseText) {
+                             displayMessage(llmResponseText, 'ai');
+                        } else {
+                             displayMessage("AI 助手未能提供回应。", 'ai'); // 处理后端没有返回 responseText 的情况
+                        }
+
+                    } catch (error) {
+                        // 处理发送请求或接收回应过程中发生的错误
+                        console.error('发送请求或接收回应时出错:', error);
+                        displayMessage("与 AI 助手通信时发生错误。", 'ai'); // 显示错误提示给用户
+                    }
+                }
+            });
+
+            // 可选：在输入框中按下 Enter 键时发送消息
+            promptInput.addEventListener('keypress', function(event) {
+                if (event.key === 'Enter') {
+                    event.preventDefault(); // 阻止默认的换行或表单提交行为
+                    sendPromptButton.click(); // 模拟点击发送按钮
+                }
+            });
+
+            // 辅助函数：根据发送者类型在聊天区域显示消息气泡
+            function displayMessage(message, sender) {
+                const messageBubble = document.createElement('div');
+                messageBubble.classList.add('flex', 'items-end', 'space-x-2', 'mb-4'); // 添加 mb-4 增加消息间距
+
+                if (sender === 'user') {
+                    // 用户消息靠右显示
+                    messageBubble.classList.add('justify-end');
+                    messageBubble.innerHTML = `
+                        <div class="max-w-[70%]">
+                            <div class="bg-primary text-white rounded-t-xl rounded-bl-xl p-3">
+                                <p>${message}</p>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1 text-right">${getCurrentTime()}</div>
+                        </div>
+                        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                            <i class="fas fa-user text-sm"></i>
+                        </div>
+                    `;
+                } else if (sender === 'ai') {
+                    // AI 消息靠左显示
+                     messageBubble.innerHTML = `
+                        <div class="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
+                            <i class="fas fa-robot text-sm"></i>
+                        </div>
+                        <div class="max-w-[70%]">
+                            <div class="bg-secondary text-white rounded-t-xl rounded-br-xl p-3">
+                                <p>${message}</p>
+                            </div>
+                            <div class="text-xs text-gray-400 mt-1">${getCurrentTime()}</div>
+                        </div>
+                    `;
+                }
+
+                chatMessages.appendChild(messageBubble);
+                // 滚动到聊天区域底部，显示最新消息
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+
+            // 辅助函数：获取当前时间，格式为 HH:MM
+            function getCurrentTime() {
+                const now = new Date();
+                const hours = String(now.getHours()).padStart(2, '0');
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                return `${hours}:${minutes}`;
+            }
+
+
+            // 可选：在页面加载时显示一条初始的 AI 欢迎消息
+            displayMessage("你好！我是你的 AI 助手。有什么我可以帮你的吗？", 'ai');
+
+        });
+    </script>
+
+</body>
+</html>

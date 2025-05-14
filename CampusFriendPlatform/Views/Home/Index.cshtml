@@ -1,0 +1,155 @@
+@* 这个视图将作为一个独立的 HTML 页面渲染，不使用 _Layout.cshtml *@
+@{
+    // 明确设置布局为 null，表示不使用任何布局页
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>校园交友平台</title>
+@* 引入 Tailwind CSS 的 CDN (注意：JIT 编译器 CDN 主要用于开发环境，生产环境建议使用构建过程生成静态 CSS) *@
+<script src="https://cdn.tailwindcss.com"></script>
+@* 引入您提供的 Tailwind 配置，必须在 Tailwind CDN 脚本之后 *@
+<script>
+    tailwind.config = {
+        theme: {
+            extend: {
+                colors: {
+                    primary: '#64B5F6', // 自定义主色调
+                    secondary: '#81C784' // 自定义次色调
+                },
+                borderRadius: {
+                    'none': '0px',
+                    'sm': '8px',
+                    DEFAULT: '12px', // 默认圆角
+                    'md': '16px',
+                    'lg': '20px',
+                    'xl': '24px',
+                    '2xl': '28px',
+                    '3xl': '32px',
+                    'full': '9999px',
+                    'button': '12px' // 按钮的自定义圆角
+                }
+            }
+        }
+    }
+</script>
+@* 引入 Font Awesome 图标库的 CDN *@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@* 引入 Google Fonts 的 CDN (Pacifico 字体) *@
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+@* 您提供的内嵌 CSS 样式 *@
+<style>
+    body {
+        min-height: 1024px; /* 确保主体有最小高度 */
+        /* 设置背景渐变 - 使用 !important 提高优先级，确保覆盖布局页的 body 样式 */
+        background: linear-gradient(135deg, #1a1c1e 0%, #2d3035 100%) !important;
+        color: white !important; /* 强制设置文字颜色为白色 */
+        /* 注意：如果您在 _Layout 的 body 上有其他重要样式，可能需要在这里进一步调整 */
+    }
+    .glass-effect {
+        backdrop-filter: blur(12px); /* 玻璃模糊效果 */
+        background: rgba(255, 255, 255, 0.1); /* 半透明背景 */
+    }
+    /* Bento Grid 布局样式 */
+    .bento-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); /* 3列等宽 */
+        gap: 24px; /* 网格间距 */
+    }
+    /* Bento Card 样式 */
+    .bento-card {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(12px);
+        transition: all 0.3s ease; /* 过渡效果 */
+    }
+    .bento-card:hover {
+        transform: translateY(-4px); /* 悬停时上移 */
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2); /* 悬停时阴影 */
+    }
+    /* 按钮悬停效果样式 */
+    .button-hover {
+        transition: all 0.3s ease;
+    }
+    .button-hover:hover {
+        transform: translateY(-2px); /* 悬停时上移 */
+        box-shadow: 0 4px 12px rgba(100, 181, 246, 0.3); /* 悬停时阴影 */
+    }
+     /* 自定义按钮圆角 - 使用 !important 提高优先级 */
+    .button-hover.\!rounded-button { /* 选择器，确保覆盖 Tailwind 的 rounded-button 类 */
+         border-radius: 12px !important;
+    }
+
+</style>
+</head>
+<body class="text-white">
+    @* 页面头部 *@
+    <header class="fixed w-full z-50 glass-effect">
+        <nav class="max-w-[1440px] mx-auto px-8 h-16 flex items-center justify-between">
+            <div class="flex items-center space-x-4">
+                <span class="text-2xl font-['Pacifico']">logo</span>
+                <span class="text-lg font-medium">校园交友平台</span>
+            </div>
+            <div>@* 可选：在这里添加导航链接 *@</div>
+        </nav>
+    </header>
+
+    @* 页面主要内容 *@
+    <main class="max-w-[1440px] mx-auto px-8 pt-32"> @* pt-32 为头部腾出空间 *@
+        <section class="text-center mb-16">
+            <h1 class="text-4xl font-bold mb-12">欢迎来到上海师范大学校园交友平台</h1>
+            <div class="flex justify-center space-x-12">
+                @* “放纸条”按钮/链接 - 修改为使用 Url.Action 生成链接 *@
+                @* 使用 <a> 标签并应用按钮样式 *@
+                <a href="@Url.Action("Create", "Notes")" class="button-hover !rounded-button px-16 py-8 bg-primary flex items-center space-x-4 text-2xl">
+                    <i class="fas fa-paper-plane text-3xl"></i> @* Font Awesome 图标 *@
+                    <span>放纸条</span>
+                </a>
+                @* “取纸条”按钮/链接 - 修改为使用 Url.Action 生成链接 *@
+                <a href="@Url.Action("Find", "Notes")" class="button-hover !rounded-button px-16 py-8 bg-secondary flex items-center space-x-4 text-2xl">
+                    <i class="fas fa-search text-3xl"></i> @* Font Awesome 图标 *@
+                    <span>取纸条</span>
+                </a>
+                @* 添加 "智能助手" 按钮/链接 *@
+                @* 我们将使用 fas fa-robot 作为图标，bg-primary 作为背景色 *@
+                <a href="@Url.Action("IntelligentAssistant", "Home")" class="button-hover !rounded-button px-16 py-8 bg-primary flex items-center space-x-4 text-2xl">
+                    <i class="fas fa-robot text-3xl"></i>
+                    <span>智能助手</span>
+                </a>
+                @* 新增：上海师范大学官网跳转按钮 *@
+                <a href="https://main.shnu.edu.cn/main.htm" target="_blank" rel="noopener noreferrer" class="button-hover !rounded-button px-16 py-8 bg-secondary flex items-center space-x-4 text-2xl">
+                    <i class="fas fa-university text-3xl"></i>
+                    <span>上师大官网</span>
+                </a>
+            </div>
+        </section>
+        @* 可选：在这里添加您主页的其他内容段落 *@
+    </main>
+
+    @* 页面底部 *@
+    <footer class="max-w-[1440px] mx-auto px-8 py-8">
+        <div class="flex justify-between items-center">
+            <p class="text-sm text-gray-400">© 2024 校园交友平台 版权所有</p>
+        <div class="flex space-x-6">
+                <a href="#" class="text-sm text-gray-400 hover:text-white">关于我们</a>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">使用条款</a>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">隐私政策</a>
+                <a href="#" class="text-sm text-gray-400 hover:text-white">联系我们</a>
+            </div>
+        </div>
+    </footer>
+
+    @* 如果您的其他视图需要在布局页底部引入公共脚本（例如 jQuery、验证脚本），
+       您可能需要在这里手动引入它们，因为当 Layout=null 时，布局页的 @RenderSection("Scripts") 不会被渲染。
+       对于主页本身，通常不需要这些脚本。*@
+    @* 示例：<script src="~/lib/jquery/dist/jquery.min.js"></script> *@
+
+</body>
+</html>
